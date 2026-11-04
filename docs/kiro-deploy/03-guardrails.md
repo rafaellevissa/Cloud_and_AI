@@ -12,9 +12,10 @@ Guardrails em **camadas**, porque nenhuma camada sozinha cobre todas as superfí
 | 4. CI | `.github/workflows/terraform-ci.yml` (o Kiro gera) | `fmt`, `validate`, arquivos sensíveis, chaves AWS | **Imposta** no PR, em qualquer superfície |
 | 5. Revisão humana | `CODEOWNERS`, branch protection, Environment | Ninguém altera guardrails/IaC sem revisão | **Imposta** pelo GitHub |
 
-> As camadas 1-3 (steering, agente, hooks) **já estão neste repositório**. As camadas 4-5 (CI e governança)
-> passam a valer quando o Kiro **gera** `terraform-ci.yml` e `CODEOWNERS` no fluxo — por isso elas vêm
-> descritas em `.kiro/steering/30-github-actions.md` como alvo a produzir.
+> As camadas 1-3 (steering, agente, hooks) e a camada 5 (`CODEOWNERS` + template de PR) **já estão neste
+> repositório**. A camada 4 (CI: `terraform-ci.yml`) passa a valer quando o Kiro a **gera** no fluxo — ela
+> vem descrita em `.kiro/steering/30-github-actions.md` como alvo a produzir. A branch protection e o
+> Environment `production` (parte da camada 5) são ativados por você nas configurações do GitHub.
 | 6. Sem credenciais | Secrets só no GitHub | O Kiro não consegue agir na AWS | **Estrutural** |
 
 A camada 6 é a mais forte: **o agente não tem como destruir o que não consegue acessar.**

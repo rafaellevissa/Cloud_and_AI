@@ -1,0 +1,9 @@
+# Guardrails e infraestrutura exigem revisao do dono do repositorio.
+# Para tornar obrigatorio: Settings > Branches > Branch protection > "Require review from Code Owners".
+#
+# As regras de /iac/ e /.github/workflows/ ja ficam prontas: passam a valer assim que o Kiro
+# gerar esses diretorios durante o fluxo de deploy.
+/.kiro/                  @rafaellevissa
+/.github/                @rafaellevissa
+/iac/                    @rafaellevissa
+/docs/                   @rafaellevissa

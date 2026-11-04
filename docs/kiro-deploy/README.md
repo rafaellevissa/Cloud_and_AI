@@ -30,12 +30,15 @@ steering.
 ├── hooks/                       # Bloqueios automáticos (IDE e CLI)
 └── settings/mcp.json            # Documentação oficial da AWS (somente leitura)
 
+.github/
+├── CODEOWNERS                   # revisão obrigatória do dono (quando branch protection estiver ativa)
+└── pull_request_template.md     # checklist de PR (infra, segurança, custo, verificação)
+
 docs/kiro-deploy/                # Esta documentação
 
 # Gerados pelo Kiro durante o fluxo (aparecem no PR, não existem no template):
 #   iac/terraform/               # IaC (módulo por região)
 #   .github/workflows/           # terraform-ci, terraform-plan, deploy/destroy, backend, schema
-#   .github/pull_request_template.md, .github/CODEOWNERS
 ```
 
 ## Leia nesta ordem
