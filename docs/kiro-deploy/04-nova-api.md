@@ -1,4 +1,4 @@
-# 04. Usando o kit com outra API
+# 04. Usando o kit com a sua API
 
 ## O que a sua API precisa
 
@@ -17,39 +17,33 @@ O Kiro cria o `deploy-config.yaml` perguntando. Se preferir, copie
 `.kiro/skills/deploy-rest-api/assets/deploy-config.example.yaml` para a raiz e preencha. O arquivo
 **não contém segredos**.
 
-## O que o kit já resolve
+## O que o Kiro gera a partir do `deploy-config.yaml`
 
-Rede em 2 AZs, ALB, Auto Scaling Group, WAF, ECR, RDS MySQL, Secrets Manager, S3 opcional,
-logs e dashboard no CloudWatch, DNS opcional, e os pipelines de infra, build e redeploy.
+Rede em 2 AZs, ALB, Auto Scaling Group, WAF, ECR, RDS MySQL (opcional), Secrets Manager, S3 (opcional),
+logs e dashboard no CloudWatch, DNS (opcional), e os pipelines de infra, build e redeploy. Tudo é **gerado
+durante o fluxo** (fases 3 e 4), não vem pronto no template.
 
-## O que costuma mudar por API
+## O que varia conforme a sua API
 
-| Item | Onde |
+| Item | De onde o Kiro tira |
 |---|---|
-| Nome do ECR | `ecr_repository_name` |
-| Porta do container | `docker run -p 80:<porta>` em `user-data.sh.tftpl` |
-| Path do health check | `loadbalancer.tf` |
-| Variáveis de ambiente | bloco `docker run -e` em `user-data.sh.tftpl` |
-| Banco / S3 / DNS / regiões | flags e módulos em `main.tf` |
+| Nome do ECR | `app.name` / `infra` |
+| Porta do container | `app.container_port` |
+| Path do health check | `app.health_check_path` |
+| Variáveis de ambiente | `app.env_vars` |
+| Banco / S3 / DNS / regiões | flags em `infra.*` |
 
-Procedimento completo: `.kiro/skills/deploy-rest-api/references/03-adaptar-iac.md`.
+Como isso vira Terraform: `.kiro/skills/deploy-rest-api/references/03-adaptar-iac.md`.
 
-## Limitações atuais do kit (transparência)
+## O que ainda não é automático (transparência)
 
-O módulo `region-stack` foi construído a partir de uma API específica. Hoje:
-
-- A **porta (3000)**, o **health check (`/`)** e as **variáveis de ambiente** do container estão fixos no
-  módulo; adaptar para outra API significa **parametrizá-los** (o Kiro faz isso na fase 3, via PR).
-- O banco suportado é **MySQL/RDS**. Outro banco exige alterar o módulo.
-- O schema do banco é aplicado por workflow separado, apontando para `src/db/schema.sql`.
-- A topologia de referência é multi-região. Uma região só é possível, mas exige remover o módulo secundário,
-  o registro DNS e os widgets do dashboard.
-
-Uma evolução natural, e boa candidata a spec do Kiro, é transformar essas variações em **variáveis do
-módulo** (`container_port`, `health_check_path`, `app_env`, regiões opcionais) para que a próxima API não
-exija editar o módulo.
+- O banco de referência é **MySQL/RDS**. Outro banco exige o Kiro ajustar o módulo (sinalize isso; pode
+  virar uma spec).
+- O **schema do banco** é aplicado por um workflow separado que assume **API Node.js** (`npm run db:schema`).
+  Para outras stacks, o Kiro adapta o workflow na fase 3.
+- A arquitetura de referência é multi-região. **Uma região só** é um caso válido e mais barato: o Kiro gera
+  apenas o módulo primário, sem registro DNS secundário nem widgets extras.
 
 ## Mais de uma API no mesmo repositório?
 
-O kit assume **uma API por repositório**. Para várias, use um repositório (e um state) por API ou
-evolua o módulo para suportar múltiplos serviços.
+O fluxo assume **uma API por repositório** (um state por API). Para várias APIs, use um repositório por API.

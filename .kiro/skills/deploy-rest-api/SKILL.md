@@ -74,7 +74,8 @@ o que gera custo). Só commite depois do "ok".
 ## Fase 4: Revisão (PR + CI)
 
 1. Commit com mensagem clara e `git push` na branch.
-2. Abra o PR via `gh api repos/{owner}/{repo}/pulls` (use o template `.github/pull_request_template.md`).
+2. Abra o PR via `gh api repos/{owner}/{repo}/pulls`. Se ainda não existir `.github/pull_request_template.md`,
+   gere-o nesta etapa (resumo da mudança, impacto na infra, segredos, custo, verificação).
 3. Aguarde o workflow **Terraform CI** (fmt + validate). Se falhar, leia `gh run view <id> --log-failed`,
    corrija e reenvie.
 4. O dev revisa e faz o **merge**.

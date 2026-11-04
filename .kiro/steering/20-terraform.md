@@ -1,42 +1,51 @@
 ---
 inclusion: fileMatch
-fileMatchPattern: ["**/*.tf", "**/*.tfvars.example", "iac/**"]
+fileMatchPattern: ["**/*.tf", "**/*.tfvars", "**/*.tfvars.example", "iac/**"]
 ---
 
-# Padrões de Terraform deste kit
+# Padrões de Terraform (ao gerar ou alterar a IaC)
 
-Estrutura atual (leia antes de alterar):
+> Este repositório é um **template** e **não traz a IaC pronta**. Quando o deploy exigir infraestrutura,
+> **você gera** os arquivos Terraform em `iac/terraform/` seguindo estes padrões e a referência
+> `.kiro/skills/deploy-rest-api/references/03-adaptar-iac.md`.
 
-- Raiz: #[[file:iac/terraform/main.tf]]
-- Variáveis da raiz: #[[file:iac/terraform/variables.tf]]
-- Módulo por região: `iac/terraform/modules/region-stack/` (rede, ALB, ASG, WAF, ECR, RDS, S3, IAM)
-- Dashboard: `iac/terraform/modules/dashboard/`
+## Estrutura alvo a criar
+
+```
+iac/terraform/
+├── backend.tf        # backend S3 (sem lock DynamoDB) + required_providers (aws >= 6.0)
+├── providers.tf      # um provider por região, via alias
+├── main.tf           # orquestra região(ões) + Route53 (opcional) + dashboard (opcional)
+├── variables.tf      # toda variável com type e description
+├── outputs.tf        # DNS do ALB, URL do ECR, db_host, nomes de ASG, dashboard
+├── backend.hcl.example
+├── terraform.tfvars.example
+└── modules/
+    ├── region-stack/ # VPC, subnets multi-AZ, SGs, ALB+TG+listener, WAF, ECR, RDS, S3, IAM, ASG
+    └── dashboard/    # CloudWatch (opcional)
+```
+
+Use **um módulo reutilizável por região**. Diferenças entre regiões entram como flag
+(`create_database`, `create_s3_bucket`), não como cópia de recursos.
 
 ## Regras
 
-1. **Reuse o módulo `region-stack`.** Não copie e cole recursos entre regiões. Diferenças entre regiões
-   entram como variável ou flag (`create_database`, `create_s3_bucket`).
-2. **Toda variável** tem `type` e `description`. Valores com default seguro; nada de segredo em default.
-3. **Nomes**: prefixo `var.environment_name` em tudo. Use `name_prefix` onde o recurso é recriado
-   (Security Group, Launch Template, Target Group, Role) com `lifecycle { create_before_destroy = true }`.
-4. **Tags**: todo recurso recebe `local.common_tags`.
-5. **Segredos**: senha de banco com `random_password` + `aws_secretsmanager_secret_version`.
-   A instância lê o segredo em runtime (UserData), nunca recebe senha no código.
-6. **Provider AWS `>= 6.0`**: use `data.aws_region.current.region` (o atributo `.name` está deprecado).
-7. **State**: backend S3 configurado por `-backend-config` (bucket vem de `TF_STATE_BUCKET`).
-   Nunca versione `backend.hcl`, `*.tfstate` ou `*.tfvars`.
-8. **Formato**: rode `terraform fmt -recursive` e `terraform validate`
-   (`terraform init -backend=false` antes) a cada alteração. Não commite com erros.
-9. **Itens didáticos** (SG `0.0.0.0/0`, RDS público, `force_destroy`, `skip_final_snapshot`) precisam
-   de um comentário `# Didatico:` ao lado. Se criar um novo, comente o motivo e o risco.
-10. **Recursos opcionais** (RDS, S3, Route53, WAF, dashboard) devem poder ser desligados por variável.
-    Ao adaptar o kit para outra API, prefira adicionar uma flag a remover código.
-
-## Ao adaptar para uma nova API
-
-Siga `.kiro/skills/deploy-rest-api/references/03-adaptar-iac.md`. Em resumo, os pontos que variam por
-aplicação são: nome do ECR, porta do container, path do health check, variáveis de ambiente no
-`templates/user-data.sh.tftpl` e quais recursos opcionais ligar.
+1. **Toda variável** tem `type` e `description`. Default seguro; nenhum segredo em default.
+2. **Nomes** prefixados por `var.environment_name`. Em recursos que podem ser recriados
+   (Security Group, Launch Template, Target Group, Role, Instance Profile) use `name_prefix` +
+   `lifecycle { create_before_destroy = true }`.
+3. **Tags**: todo recurso recebe um `local.common_tags`.
+4. **Segredos**: senha de banco com `random_password` + `aws_secretsmanager_secret_version`.
+   A instância lê o segredo em runtime (UserData); nunca receba senha no código.
+5. **Provider AWS `>= 6.0`**: use `data.aws_region.current.region` (o atributo `.name` está deprecado).
+6. **State**: backend S3 por `-backend-config` (bucket vem de `TF_STATE_BUCKET`). Sem lock DynamoDB:
+   evite dois `apply` simultâneos. Nunca versione `backend.hcl`, `*.tfstate` ou `*.tfvars`.
+7. **Formato**: rode `terraform fmt -recursive` e, com `terraform init -backend=false`, `terraform validate`
+   a cada alteração. Não commite com erro de fmt/validate.
+8. **Itens didáticos** (SG `0.0.0.0/0`, RDS público, SSH aberto, `force_destroy`, `skip_final_snapshot`)
+   precisam de um comentário `# Didatico:` com o motivo e o risco.
+9. **Recursos opcionais** (RDS, S3, Route53, WAF, dashboard, segunda região) ligam/desligam por variável.
+   Prefira adicionar uma flag a remover código.
 
 ## Limites
 

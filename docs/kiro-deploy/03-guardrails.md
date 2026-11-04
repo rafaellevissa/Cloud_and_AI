@@ -9,8 +9,12 @@ Guardrails em **camadas**, porque nenhuma camada sozinha cobre todas as superfí
 | 1. Steering | `.kiro/steering/10-guardrails.md` | Instrui o modelo: regras e gates | **Orientação** (o modelo segue, mas não é barreira técnica) |
 | 2. Permissões do agente | `.kiro/agents/deploy-guide.md` | `allow`/`ask`/`deny` para shell e escrita | **Imposta** pelo Kiro, onde o agente é usado |
 | 3. Hooks | `.kiro/hooks/` | Bloqueiam comandos e arquivos sensíveis antes de executar | **Imposta** (exit 2), no IDE e CLI |
-| 4. CI | `.github/workflows/terraform-ci.yml` | `fmt`, `validate`, arquivos sensíveis, chaves AWS | **Imposta** no PR, em qualquer superfície |
+| 4. CI | `.github/workflows/terraform-ci.yml` (o Kiro gera) | `fmt`, `validate`, arquivos sensíveis, chaves AWS | **Imposta** no PR, em qualquer superfície |
 | 5. Revisão humana | `CODEOWNERS`, branch protection, Environment | Ninguém altera guardrails/IaC sem revisão | **Imposta** pelo GitHub |
+
+> As camadas 1-3 (steering, agente, hooks) **já estão neste repositório**. As camadas 4-5 (CI e governança)
+> passam a valer quando o Kiro **gera** `terraform-ci.yml` e `CODEOWNERS` no fluxo — por isso elas vêm
+> descritas em `.kiro/steering/30-github-actions.md` como alvo a produzir.
 | 6. Sem credenciais | Secrets só no GitHub | O Kiro não consegue agir na AWS | **Estrutural** |
 
 A camada 6 é a mais forte: **o agente não tem como destruir o que não consegue acessar.**

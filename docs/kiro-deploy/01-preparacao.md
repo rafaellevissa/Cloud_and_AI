@@ -8,9 +8,11 @@ Tempo estimado: 20–30 minutos. Você precisa de uma conta GitHub, uma conta AW
 2. Traga o kit para o repositório da sua API. Duas opções:
    - **Use este repositório como template** (*Use this template*) e adicione o código da API na raiz; ou
    - **Copie** `.kiro/`, `.github/`, `iac/` e `docs/kiro-deploy/` para o repositório da sua API.
-3. Em `.github/CODEOWNERS`, troque `@rafaellevissa` pelo seu usuário.
-4. Revise os valores de exemplo em `iac/terraform/variables.tf` (ver a tabela em `iac/terraform/README.md`):
-   nome do ambiente, nome do ECR e, principalmente, o **domínio**, cuja hosted zone precisa existir na sua conta.
+3. Este template traz **só** `.kiro/` (instruções do Kiro) e `docs/` (este guia). A IaC (`iac/`) e os
+   workflows (`.github/`) **são gerados pelo Kiro** durante o fluxo (fases 3 e 4). Não procure esses
+   arquivos agora; eles aparecem no PR que o Kiro abre.
+4. Quando o Kiro gerar a IaC, ele vai te perguntar os valores (nome do ambiente, ECR e, principalmente, o
+   **domínio** — cuja hosted zone precisa existir na sua conta). Nada disso fica hardcoded no template.
 
 ## 2. Conectar o repositório ao Kiro
 

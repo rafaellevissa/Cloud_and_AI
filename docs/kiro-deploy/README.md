@@ -12,13 +12,17 @@ credenciais AWS.
 
 ## Mapa do kit
 
+Este repositório contém **só** o material que orienta o Kiro e esta documentação. A IaC (`iac/`) e os
+workflows (`.github/`) **não vêm prontos**: o Kiro os **gera** durante o fluxo, seguindo os padrões do
+steering.
+
 ```
 .kiro/
 ├── steering/                    # Regras e contexto que o Kiro lê
 │   ├── 00-contexto-e-contrato   #   (sempre)   o que é o kit e qual o papel do Kiro
 │   ├── 10-guardrails            #   (sempre)   regras inegociáveis e gates G1-G5
-│   ├── 20-terraform             #   (arquivos .tf)  padrões de IaC
-│   ├── 30-github-actions        #   (workflows)     padrões de pipeline
+│   ├── 20-terraform             #   (arquivos .tf)  padrões ao GERAR a IaC
+│   ├── 30-github-actions        #   (workflows)     padrões ao GERAR os pipelines
 │   ├── 40-contrato-da-api       #   (auto)     o que a API precisa cumprir
 │   └── 50-iam-e-permissoes      #   (auto)     lições de IAM/AccessDenied
 ├── skills/deploy-rest-api/      # O roteiro guiado (8 fases) + referências + templates
@@ -26,14 +30,12 @@ credenciais AWS.
 ├── hooks/                       # Bloqueios automáticos (IDE e CLI)
 └── settings/mcp.json            # Documentação oficial da AWS (somente leitura)
 
-.github/
-├── workflows/terraform-ci.yml   # fmt + validate + guarda de segredos (em todo PR)
-├── workflows/terraform-plan.yml # plano manual, sem aplicar
-├── pull_request_template.md
-└── CODEOWNERS
-
-iac/terraform/                   # IaC de referência (módulo por região)
 docs/kiro-deploy/                # Esta documentação
+
+# Gerados pelo Kiro durante o fluxo (aparecem no PR, não existem no template):
+#   iac/terraform/               # IaC (módulo por região)
+#   .github/workflows/           # terraform-ci, terraform-plan, deploy/destroy, backend, schema
+#   .github/pull_request_template.md, .github/CODEOWNERS
 ```
 
 ## Leia nesta ordem

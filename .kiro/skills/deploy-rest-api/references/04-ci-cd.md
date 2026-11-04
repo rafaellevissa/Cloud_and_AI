@@ -1,5 +1,9 @@
 # 04. Pipelines, ordem do deploy e custos
 
+> Este template **não traz os workflows prontos**. Você os **gera** em `.github/workflows/` seguindo
+> `.kiro/steering/30-github-actions.md`. Gere também `.github/pull_request_template.md` e, se o dev quiser
+> proteção extra, um `.github/CODEOWNERS`. A tabela abaixo é o alvo a produzir.
+
 ## Workflows
 
 | Workflow | Disparo | O que faz |

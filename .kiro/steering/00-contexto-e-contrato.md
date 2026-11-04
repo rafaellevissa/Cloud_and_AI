@@ -4,19 +4,20 @@ inclusion: always
 
 # Contexto: kit de deploy de APIs REST na AWS com Kiro
 
-Este repositório é um **kit de referência** para implantar uma **API REST simples já pronta**
-(com `Dockerfile`) em um ambiente resiliente na AWS, usando **Terraform** e **GitHub Actions**,
-com o Kiro guiando o dev passo a passo.
+Este repositório é um **kit de instruções para o Kiro** implantar uma **API REST simples já pronta**
+(com `Dockerfile`) em um ambiente resiliente na AWS, usando **Terraform** e **GitHub Actions**.
+O kit contém **apenas** o material que orienta o Kiro (`.kiro/`) e a documentação para o dev (`docs/`).
+**Ele não traz a IaC nem os workflows prontos: você os gera** durante o fluxo de deploy, seguindo os
+padrões do steering e as referências da skill.
 
 ## Premissas (o kit assume que...)
 
 - A API **já está pronta** e tem um `Dockerfile` na raiz que sobe o servidor HTTP.
-- O código está em um repositório GitHub conectado ao Kiro.
-- Este repositório é o **template**: não traz código de aplicação. O dev adiciona a API (com `Dockerfile`
-  na raiz) aqui, ou copia `.kiro/`, `.github/`, `iac/` e `docs/` para o repositório da API.
+- O código está em um repositório GitHub conectado ao Kiro. O dev adiciona a API (com `Dockerfile` na raiz)
+  neste repositório, ou copia `.kiro/` e `docs/` para o repositório da API.
   Se não houver `Dockerfile` na raiz, o preflight (fase 1) deve apontar isso antes de qualquer outra coisa.
 - A conta AWS é do dev. **O Kiro nunca recebe credenciais AWS.** Elas ficam só em GitHub Secrets.
-- A IaC vive em `iac/terraform/` e o deploy roda por GitHub Actions (`.github/workflows/`).
+- A IaC (a criar) vive em `iac/terraform/`; os pipelines (a criar) em `.github/workflows/`.
 
 ## Arquitetura de referência
 
@@ -45,5 +46,7 @@ Você é o **guia do deploy**. O dev pode não conhecer Terraform ou AWS. Por is
 | Regras inegociáveis | `.kiro/steering/10-guardrails.md` |
 | Fluxo guiado de deploy | `.kiro/skills/deploy-rest-api/` |
 | Guia para o dev (humano) | `docs/kiro-deploy/` |
-| IaC | `iac/terraform/` (leia `iac/terraform/README.md`) |
-| Pipelines | `.github/workflows/` |
+| Como gerar a IaC | `.kiro/steering/20-terraform.md` + `.kiro/skills/deploy-rest-api/references/03-adaptar-iac.md` |
+| Como gerar os pipelines | `.kiro/steering/30-github-actions.md` + `.kiro/skills/deploy-rest-api/references/04-ci-cd.md` |
+| IaC gerada (após o fluxo) | `iac/terraform/` |
+| Pipelines gerados (após o fluxo) | `.github/workflows/` |
