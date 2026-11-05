@@ -1,5 +1,7 @@
 # Cloud_and_AI
 
+Link dos slides: https://docs.google.com/presentation/d/1B_uHwGBQCH9EUwFWKjUCjIUs09p4NNX3nr681qVHXfc/edit?slide=id.p13#slide=id.p13
+
 Instruções para o **Kiro** publicar uma **API REST (com Dockerfile) na AWS** com **Terraform** e
 **GitHub Actions**, com **guardrails** que limitam o que o agente pode fazer.
 
